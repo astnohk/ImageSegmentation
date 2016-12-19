@@ -37,7 +37,8 @@ void
 OPTIONS::set_default(const char *name)
 {
 	if (strcmp(name, "ResampleSize") == 0) {
-		ResampleSize.reset();
+		ResampleSize.width = 0;
+		ResampleSize.height = 0;
 	} else if (strcmp(name, "Mode") == 0) {
 		Mode = 0;
 	} else if (strcmp(name, "Output") == 0) {
@@ -51,7 +52,7 @@ void
 OPTIONS::set_value(const char *name, const void *value)
 {
 	if (strcmp(name, "ResampleSize") == 0) {
-		ResampleSize.set_size(static_cast<const SIZE*>(value));
+		ResampleSize = *static_cast<const struct {unsigned int width; unsigned int height;}*>(value);
 	} else if (strcmp(name, "Mode") == 0) {
 		Mode = *static_cast<const int*>(value);
 	} else if (strcmp(name, "Output") == 0) {

@@ -13,6 +13,9 @@
 #include <unistd.h>
 #include <vector>
 
+#include "Error.h"
+#include "Options.h"
+
 #include "ImgClass/RGB.h"
 #include "ImgClass/Lab.h"
 #include "ImgClass/Vector.h"
@@ -35,5 +38,5 @@ extern const char Progress_End[];
 // prototype
 void SequenceProcessor(const std::string& OutputName, const std::string& InputName, const int Start, const int End, const OPTIONS& Options);
 
-ImgVector<RGB> segmentation(const ImgVector<RGB>& img, const double MaxInt, const int Mode);
+ImgVector<RGB> Segmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned int Mode);
 

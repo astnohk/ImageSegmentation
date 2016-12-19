@@ -6,7 +6,7 @@
 
 struct OPTIONS
 {
-	SIZE ResampleSize;
+	struct {unsigned int width; unsigned int height;} ResampleSize;
 	unsigned long ResampleMethod;
 	unsigned long Mode;
 	unsigned long Output;
