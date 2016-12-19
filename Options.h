@@ -1,3 +1,8 @@
+#ifndef LIB_Class
+#define LIB_Class
+
+#include <iostream>
+#include <cstring>
 
 struct OPTIONS
 {

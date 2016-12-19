@@ -43,7 +43,7 @@ OPTIONS::set_default(const char *name)
 	} else if (strcmp(name, "Output") == 0) {
 		Output = 0;
 	} else {
-		fprintf(stderr, "*** OPTIONS::set_default() error - There are NOT such a parameter '%s' ***\n", name);
+		std::cerr << "*** OPTIONS::set_default() error - There are NOT such a parameter '" << name << "' ***" << std::endl;
 	}
 }
 
@@ -57,7 +57,7 @@ OPTIONS::set_value(const char *name, const void *value)
 	} else if (strcmp(name, "Output") == 0) {
 		Output = *static_cast<const int*>(value);
 	} else {
-		fprintf(stderr, "*** OPTIONS::set_default() error - There are NOT such a parameter '%s' ***\n", name);
+		std::cerr << "*** OPTIONS::set_default() error - There are NOT such a parameter '" << name << "' ***" << std::endl;
 	}
 }
 
