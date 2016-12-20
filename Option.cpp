@@ -1,3 +1,8 @@
+#include "Option.h"
+
+
+
+
 OPTIONS::OPTIONS(void)
 {
 	ResampleMethod = 0;
@@ -25,9 +30,9 @@ OPTIONS::ChangeResampleMethod(const char *name)
 	}
 	lower[strlen(lower) + 1] = '\0';
 	if (strcmp(lower, "z-hold") == 0) {
-		ResampleMethod = PNM_Resize_ZeroOrderHold;
+		ResampleMethod = OPTION_Resample_ZeroOrderHold;
 	} else if (strcmp(lower, "bicubic") == 0) {
-		ResampleMethod = PNM_Resize_Bicubic;
+		ResampleMethod = OPTION_Resample_Bicubic;
 	}
 	delete[] lower;
 	return true;
@@ -52,7 +57,7 @@ void
 OPTIONS::set_value(const char *name, const void *value)
 {
 	if (strcmp(name, "ResampleSize") == 0) {
-		ResampleSize = *static_cast<const struct {unsigned int width; unsigned int height;}*>(value);
+		ResampleSize = *static_cast<const SIZE*>(value);
 	} else if (strcmp(name, "Mode") == 0) {
 		Mode = *static_cast<const int*>(value);
 	} else if (strcmp(name, "Output") == 0) {

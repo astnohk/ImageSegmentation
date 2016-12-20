@@ -8,7 +8,7 @@ MACROS=
 MAIN_CFILES = main.cpp ImageSegmentation.cpp
 LIBRARY_CFILES = Error.cpp Option.cpp
 IMGCLASS_CFILES = ImgClass/Color.cpp ImgClass/Lab.cpp ImgClass/RGB.cpp ImgClass/Segmentation.cpp
-PNM_CFILES = PNM/pnm.cpp PNM/pnm_double.cpp PNM/pnm_library.cpp
+PNM_CFILES = pnm_lib_cpp/pnm.cpp pnm_lib_cpp/pnm_double.cpp pnm_lib_cpp/pnm_library.cpp
 
 CFILES = $(MAIN_CFILES) $(LIBRARY_CFILES) $(IMGCLASS_CFILES) $(MEANINGFUL_CFILES) $(OPTICALFLOW_CFILES) $(HOG_CFILES) $(PLOT_CFILES) $(PNM_CFILES)
 
@@ -51,13 +51,13 @@ Segmentation.o: ImgClass/Segmentation.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
 
-pnm.o: PNM/pnm.cpp
+pnm.o: pnm_lib_cpp/pnm.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
-pnm_double.o: PNM/pnm_double.cpp
+pnm_double.o: pnm_lib_cpp/pnm_double.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
-pnm_library.o: PNM/pnm_library.cpp
+pnm_library.o: pnm_lib_cpp/pnm_library.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
 

@@ -8,19 +8,19 @@ using namespace ImgClass;
 
 
 // This function will compute INVERSE Optical Flow it points the previous frame which will come to the current (next) frame.
-Segmentation<Lab>
-ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned int Mode)
+Segmentation<Lab> *
+ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned int Mode, const std::string& newest_filename)
 {
 	std::bad_alloc except_bad_alloc;
 
 	ImgVector<RGB> img_normalize;
 	ImgVector<Lab> img_Lab_normalize;
-	Segmentation<Lab> segmentation;
+	Segmentation<Lab> *result = nullptr;
 
 	if (img.isNULL()) {
-		throw std::invalid_argument("segmentation(const ImgVector<RGB>&, const double, const int) : const ImgVector<RGB>& img");
+		throw std::invalid_argument("ImageSegmentation(const ImgVector<RGB>&, const double, const int) : const ImgVector<RGB>& img");
 	} else if (MaxInt < 0) {
-		throw std::invalid_argument("segmentation(const ImgVector<RGB>&, const double, const int) : const double MaxInt");
+		throw std::invalid_argument("ImageSegmentation(const ImgVector<RGB>&, const double, const int) : const double MaxInt");
 	}
 
 	img_normalize.copy(img);
@@ -49,7 +49,14 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 #endif
 
 	printf("* * Compute Segmentation by Mean Shift\n");
-	segmentation.reset(img_Lab_normalize, kernel_spatial, kernel_intensity); // Set and compute segmentation
+	try {
+		result = new Segmentation<Lab>;
+	}
+	catch (std::bad_alloc err) {
+		std::cerr << err.what() << std::endl;
+		return nullptr;
+	}
+	result->reset(img_Lab_normalize, kernel_spatial, kernel_intensity); // Set and compute segmentation
 
 	PNM pnm;
 	std::string::size_type found = 1 + newest_filename.find_last_not_of("0123456789", newest_filename.find_last_of("0123456789", newest_filename.find_last_of(".")));
@@ -59,11 +66,11 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	std::string newest_filename_segmentation = newest_filename.substr(0, found) + "segmentation_" + newest_filename.substr(found);
 	printf("* Output The Segmentation result to '%s'(binary)\n\n", newest_filename_segmentation.c_str());
 	{
-		ImgVector<int> tmp_vector(segmentation.width(), segmentation.height());
-		for (size_t i = 0; i < segmentation.size(); i++) {
-			tmp_vector[i] = static_cast<int>(segmentation[i]);
+		ImgVector<int> tmp_vector(result->width(), result->height());
+		for (size_t i = 0; i < result->size(); i++) {
+			tmp_vector[i] = static_cast<int>(result->at(i));
 		}
-		pnm.copy(PORTABLE_GRAYMAP_BINARY, segmentation.width(), segmentation.height(), int(tmp_vector.max()), tmp_vector.data());
+		pnm.copy(PORTABLE_GRAYMAP_BINARY, result->width(), result->height(), int(tmp_vector.max()), tmp_vector.data());
 		pnm.write(newest_filename_segmentation.c_str());
 		pnm.free();
 	}
@@ -72,8 +79,8 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		int width = img_normalize.width();
 		int height = img_normalize.height();
 
-		int *img_quantized = new int[3 * segmentation.width() * segmentation.height()];
-		for (const std::vector<VECTOR_2D<int> >& region : segmentation.ref_regions()) {
+		int *img_quantized = new int[3 * result->width() * result->height()];
+		for (const std::vector<VECTOR_2D<int> >& region : result->ref_regions()) {
 			RGB sum_sRGB(.0, .0, .0);
 			for (const VECTOR_2D<int>& r : region) {
 				sum_sRGB += img_normalize.get(r.x, r.y);
@@ -90,9 +97,9 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		}
 		std::string newest_filename_quantized = newest_filename.substr(0, found) + "color-quantized_" + newest_filename.substr(found);
 		printf("* Output The color quantized image '%s'(binary)\n\n", newest_filename_quantized.c_str());
-		pnm.copy(PORTABLE_PIXMAP_BINARY, segmentation.width(), segmentation.height(), 255, img_quantized);
-		delete[] quantized;
-		quantized = nullptr;
+		pnm.copy(PORTABLE_PIXMAP_BINARY, result->width(), result->height(), 255, img_quantized);
+		delete[] img_quantized;
+		img_quantized = nullptr;
 		pnm.write(newest_filename_quantized.c_str());
 		pnm.free();
 	}
@@ -100,17 +107,17 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	std::string newest_filename_vector = newest_filename.substr(0, found) + "shift-vector_" + newest_filename.substr(found);
 	FILE *fp;
 	fp = fopen(newest_filename_vector.c_str(), "w");
-	fprintf(fp, "%d %d\n", segmentation.width(), segmentation.height());
-	for (int y = 0; y < segmentation.height(); y++) {
-		for (int x = 0; x < segmentation.width(); x++) {
+	fprintf(fp, "%d %d\n", result->width(), result->height());
+	for (int y = 0; y < result->height(); y++) {
+		for (int x = 0; x < result->width(); x++) {
 			VECTOR_2D<double> v;
-			v.x = segmentation.ref_shift_vector_spatial().get(x, y).x - x;
-			v.y = segmentation.ref_shift_vector_spatial().get(x, y).y - y;
+			v.x = result->ref_shift_vector_spatial().get(x, y).x - x;
+			v.y = result->ref_shift_vector_spatial().get(x, y).y - y;
 			fwrite(&v.x, sizeof(double), 1, fp);
 			fwrite(&v.y, sizeof(double), 1, fp);
 		}
 	}
 	fclose(fp);
-	return segmentation;
+	return result;
 }
 

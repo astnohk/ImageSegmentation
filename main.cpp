@@ -1,4 +1,5 @@
-#include "segmentation.h"
+#include "ImageSegmentation.h"
+
 
 const char Progress[NUM_PROGRESS][6] = {
     "\0\0\0\0\0", "\x1b[1C\0", "\x1b[2C\0", "\x1b[3C\0", "\x1b[4C\0",
@@ -57,24 +58,15 @@ main(int argc, char *argv[])
 	OPTIONS Options;
 
 	int inf = 0, outf = 0;
-	char *strtmp = nullptr;
-	char *strdivp = nullptr;
-	bool bval;
-	int ival;
-	double dval;
-	SIZE tmpsize;
-	int i, k;
+	struct {unsigned int width; unsigned int height;} tmpsize;
+	bool bval = false;
 
-	for (i = 1; i < argc; i++) {
+	for (int i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			if (strlen(argv[i]) > 2) {
 				if (strcmp(argv[i], "--help") == 0) {
 					printf("%s\n", help);
 					return EXIT_SUCCESS;
-				} else if (strcmp(argv[i], "--plot_as_resampled") == 0) {
-					Options.PlotOptions |= PLOT_AS_RESAMPLED;
-				} else if (strcmp(argv[i], "--plot_resampled_only") == 0) {
-					Options.PlotOptions |= PLOT_RESAMPLED_IMG_ONLY;
 				} else if (strcmp(argv[i], "--resample") == 0) {
 					if (i + 1 >= argc) {
 						fprintf(stderr, "*** Please input Width, Height or both after '--resample' option (e.g. : --resample 128x128) ***\n");

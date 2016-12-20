@@ -111,7 +111,7 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 		}
 
 		// Segmentation & Output
-		Segmentation(imgd_in, pnm_orig.MaxInt(), Options.Mode);
+		Segmentation(imgd_in, pnm_orig.MaxInt(), Options.Mode, InputNameNums);
 	}
 	return;
 

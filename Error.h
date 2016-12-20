@@ -1,5 +1,5 @@
-#ifndef LIB_Class
-#define LIB_Class
+#ifndef LIB_Error
+#define LIB_Error
 
 #include <cstdio>
 #include <string>

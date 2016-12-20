@@ -1,12 +1,18 @@
-#ifndef LIB_Class
-#define LIB_Class
+#ifndef LIB_Option
+#define LIB_Option
 
 #include <iostream>
 #include <cstring>
+#include "Error.h"
+
+typedef struct {
+	unsigned int width;
+	unsigned int height;
+} SIZE;
 
 struct OPTIONS
 {
-	struct {unsigned int width; unsigned int height;} ResampleSize;
+	SIZE ResampleSize;
 	unsigned long ResampleMethod;
 	unsigned long Mode;
 	unsigned long Output;
@@ -23,6 +29,15 @@ struct OPTIONS
 // Output Options
 #define OUTPUT_NEGATE 0x01
 #define OUTPUT_RESAMPLED 0x02
+
+// Errors
+#define OPTION_UNKNOWN 0x0001
+#define OPTION_INCORRECT 0x0002
+#define OPTION_INSUFFICIENT 0x0004
+
+// Resample Methods
+#define OPTION_Resample_ZeroOrderHold 0x0001
+#define OPTION_Resample_Bicubic 0x0002
 
 #endif
 
