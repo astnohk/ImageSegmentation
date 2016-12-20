@@ -1,5 +1,4 @@
-#include "ImgClass/RGB.h"
-#include "Segmentation.h"
+#include "ImageSegmentation.h"
 
 
 
@@ -11,9 +10,7 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 	const char *Bars = "------------------------------------------------";
 
 	int CurrentFileNum;
-
 	const int History_Max = 4;
-	std::deque<ImgVector<ImgClass::RGB> > sequence_RGB;
 
 	PNM pnm_orig;
 	ImgVector<ImgClass::RGB> imgd_in;
@@ -111,7 +108,7 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 		}
 
 		// Segmentation & Output
-		Segmentation(imgd_in, pnm_orig.MaxInt(), Options.Mode, InputNameNums);
+		ImageSegmentation(imgd_in, pnm_orig.MaxInt(), Options.Mode, InputNameNums);
 	}
 	return;
 
