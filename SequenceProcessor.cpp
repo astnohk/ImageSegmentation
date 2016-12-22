@@ -117,3 +117,24 @@ ExitError:
 	throw std::logic_error("error: void SequenceProcessor(char *OutputName, char *InputName, unsigned int OutputNameLength, unsigned int InputNameLength, int Start, int End, OPTIONS Options)");
 }
 
+
+
+
+// String Library
+size_t
+count_format_length(const std::string& str)
+{
+	if (str.length() < 1) {
+		return 0;
+	}
+	std::string::size_type format_start = str.find_first_of("%%");
+	if (format_start == std::string::npos) {
+		return 0;
+	}
+	std::string::size_type format_num_start = str.find_first_of("0123456789", format_start);
+	std::string::size_type format_num_end = str.find_first_not_of("0123456789", format_num_start) - 1;
+	std::string::size_type digits = format_num_end - format_num_start + 1;
+	std::string num = str.substr(format_num_start, digits);
+	return stoul(num);
+}
+
