@@ -5,11 +5,11 @@
 
 OPTIONS::OPTIONS(void)
 {
+	Mode = 0;
+	Output = 0;
 	ResampleSize.width = 0;
 	ResampleSize.height = 0;
 	ResampleMethod = 0;
-	Mode = 0;
-	Output = 0;
 }
 
 bool
