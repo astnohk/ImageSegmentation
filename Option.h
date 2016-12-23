@@ -12,10 +12,10 @@ typedef struct {
 
 struct OPTIONS
 {
-	SIZE ResampleSize;
-	unsigned long ResampleMethod;
 	unsigned long Mode;
 	unsigned long Output;
+	SIZE ResampleSize;
+	unsigned long ResampleMethod;
 
 	OPTIONS(void);
 	bool ChangeResampleMethod(const char *name);

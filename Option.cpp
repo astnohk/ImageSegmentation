@@ -5,6 +5,8 @@
 
 OPTIONS::OPTIONS(void)
 {
+	ResampleSize.width = 0;
+	ResampleSize.height = 0;
 	ResampleMethod = 0;
 	Mode = 0;
 	Output = 0;
