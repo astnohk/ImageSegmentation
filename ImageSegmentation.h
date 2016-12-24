@@ -17,8 +17,10 @@
 #include "Error.h"
 #include "Option.h"
 
+#define OUTPUT_IMG_CLASS
 #include "ImgClass/RGB.h"
 #include "ImgClass/Lab.h"
+#include "ImgClass/HSV.h"
 #include "ImgClass/Vector.h"
 #include "ImgClass/ImgClass.h"
 #include "ImgClass/Segmentation.h"

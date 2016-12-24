@@ -9,7 +9,7 @@ using namespace ImgClass;
 
 // This function will compute INVERSE Optical Flow it points the previous frame which will come to the current (next) frame.
 Segmentation<Lab> *
-ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned int Mode, const std::string& newest_filename)
+ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned int Mode, const std::string& current_filename)
 {
 	std::bad_alloc except_bad_alloc;
 
@@ -59,23 +59,24 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	result->reset(img_Lab_normalize, kernel_spatial, kernel_intensity); // Set and compute segmentation
 
 	PNM pnm;
-	std::string::size_type found = 1 + newest_filename.find_last_not_of("0123456789", newest_filename.find_last_of("0123456789", newest_filename.find_last_of(".")));
+	std::string::size_type found = 1 + current_filename.find_last_not_of("0123456789", current_filename.find_last_of("0123456789", current_filename.find_last_of(".")));
 	if (found == std::string::npos) {
-		found = newest_filename.find_last_of(".");
+		found = current_filename.find_last_of(".");
 	}
-	std::string newest_filename_segmentation = newest_filename.substr(0, found) + "segmentation_" + newest_filename.substr(found);
-	printf("* Output The Segmentation result to '%s'(binary)\n\n", newest_filename_segmentation.c_str());
+	std::string current_filename_segmentation = current_filename.substr(0, found) + "segmentation_" + current_filename.substr(found);
+	printf("* Output The Segmentation result to '%s'(binary)\n\n", current_filename_segmentation.c_str());
 	{
 		ImgVector<int> tmp_vector(result->width(), result->height());
 		for (size_t i = 0; i < result->size(); i++) {
 			tmp_vector[i] = static_cast<int>(result->at(i));
 		}
 		pnm.copy(PORTABLE_GRAYMAP_BINARY, result->width(), result->height(), int(tmp_vector.max()), tmp_vector.data());
-		pnm.write(newest_filename_segmentation.c_str());
+		pnm.write(current_filename_segmentation.c_str());
 		pnm.free();
 	}
 
 	{
+		// Quantize image
 		int width = img_normalize.width();
 		int height = img_normalize.height();
 
@@ -95,29 +96,50 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 				img_quantized[2 * width * height + width * r.y + r.x] = int(sum_sRGB.B);
 			}
 		}
-		std::string newest_filename_quantized = newest_filename.substr(0, found) + "color-quantized_" + newest_filename.substr(found);
-		printf("* Output The color quantized image '%s'(binary)\n\n", newest_filename_quantized.c_str());
+		std::string current_filename_quantized = current_filename.substr(0, found) + "color-quantized_" + current_filename.substr(found);
+		printf("* Output The color quantized image '%s'(binary)\n\n", current_filename_quantized.c_str());
 		pnm.copy(PORTABLE_PIXMAP_BINARY, result->width(), result->height(), 255, img_quantized);
 		delete[] img_quantized;
 		img_quantized = nullptr;
-		pnm.write(newest_filename_quantized.c_str());
+		pnm.write(current_filename_quantized.c_str());
 		pnm.free();
 	}
-	// Output vectors
-	std::string newest_filename_vector = newest_filename.substr(0, found) + "shift-vector_" + newest_filename.substr(found);
-	FILE *fp;
-	fp = fopen(newest_filename_vector.c_str(), "w");
-	fprintf(fp, "%d %d\n", result->width(), result->height());
-	for (int y = 0; y < result->height(); y++) {
-		for (int x = 0; x < result->width(); x++) {
-			VECTOR_2D<double> v;
-			v.x = result->ref_shift_vector_spatial().get(x, y).x - x;
-			v.y = result->ref_shift_vector_spatial().get(x, y).y - y;
-			fwrite(&v.x, sizeof(double), 1, fp);
-			fwrite(&v.y, sizeof(double), 1, fp);
+	{
+		// Output vectors
+		std::string current_filename_vector = current_filename.substr(0, found) + "shift-vector_" + current_filename.substr(found) + ".dat";
+		FILE *fp;
+		fp = fopen(current_filename_vector.c_str(), "w");
+		fprintf(fp, "%d %d\n", result->width(), result->height());
+		double norm_max = 0.0;
+		ImgVector<HSV> vector_hsv(result->width(), result->height());
+		for (int y = 0; y < result->height(); y++) {
+			for (int x = 0; x < result->width(); x++) {
+				VECTOR_2D<double> v;
+				v.x = result->ref_shift_vector_spatial().get(x, y).x - x;
+				v.y = result->ref_shift_vector_spatial().get(x, y).y - y;
+				vector_hsv.at(x, y).set_H(arg(v) / M_PI * 0.5);
+				vector_hsv.at(x, y).S = 1.0;
+				vector_hsv.at(x, y).V = norm(v);
+				if (norm_max < vector_hsv.at(x, y).V) {
+					norm_max = vector_hsv.at(x, y).V;
+				}
+				fwrite(&v.x, sizeof(double), 1, fp);
+				fwrite(&v.y, sizeof(double), 1, fp);
+			}
 		}
+		fclose(fp);
+		// Plot vectors by using HSV color space
+		PNM pnm(PORTABLE_PIXMAP_ASCII, result->width(), result->height(), 255);
+		for (size_t n = 0; n < vector_hsv.size(); n++) {
+			vector_hsv[n].V /= norm_max;
+			RGB rgb = saturate(255.0 * vector_hsv[n].get_RGB(), 0.0, 255.0);
+			pnm[n] = rgb.R;
+			pnm[n + pnm.Size()] = rgb.G;
+			pnm[n + 2 * pnm.Size()] = rgb.B;
+		}
+		std::string current_filename_vector_image = current_filename.substr(0, found) + "shift-vector-img_" + current_filename.substr(found);
+		pnm.write(current_filename_vector_image.c_str());
 	}
-	fclose(fp);
 	return result;
 }
 
