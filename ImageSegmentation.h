@@ -41,7 +41,7 @@ extern const char Progress_End[];
 
 
 // prototype
-void SequenceProcessor(const std::string& OutputName, const std::string& InputName, const int Start, const int End, const OPTIONS& Options);
+void SequenceProcessor(const std::string& InputName, const int Start, const int End, const OPTIONS& Options);
 size_t count_format_length(const std::string& str);
 
 ImgClass::Segmentation<ImgClass::Lab>* ImageSegmentation(const ImgVector<ImgClass::RGB>& img, const double& MaxInt, const unsigned int Mode, const std::string& newest_filename);

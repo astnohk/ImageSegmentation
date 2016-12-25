@@ -38,7 +38,6 @@ main(int argc, char *argv[])
 	    "    General option:\n"
 	    "      -h, --help                       : show this manual\n"
 	    "      -i [input]                       : set input filename\n"
-	    "      -o [output]                      : set output filename\n"
 	    "      -s [start_num]                   : set output filename\n"
 	    "      -e [end_num]                     : set output filename\n"
 	    "      --resample [(W)x(H)]             : resampling the input image to size of [WxH] before processing (use as : --resample 128x128)\n"
@@ -52,12 +51,11 @@ main(int argc, char *argv[])
 	char *delimiter = nullptr;
 	char c_tmp = 0;
 	std::string InputName;
-	std::string OutputName;
 	int Start = 0;
 	int End = 0;
 	OPTIONS Options;
 
-	int inf = 0, outf = 0;
+	int inf = 0;
 	struct {unsigned int width; unsigned int height;} tmpsize;
 	bool bval = false;
 
@@ -140,15 +138,6 @@ main(int argc, char *argv[])
 							inf = i;
 						}
 						break;
-					case 'o':
-						if (i + 1 >= argc) {
-							fprintf(stderr, "*** Please input OUTPUT FILENAME after '-o' option ***\n");
-							errors |= OPTION_INSUFFICIENT;
-						} else {
-							i++;
-							outf = i;
-						}
-						break;
 					case 's': // Start Number
 						if (i + 1 >= argc) {
 							fprintf(stderr, "*** Please input value after '-s' option ***\n");
@@ -175,8 +164,8 @@ main(int argc, char *argv[])
 	if ((errors & OPTION_INSUFFICIENT) != 0) {
 		fprintf(stderr, "*** FATAL main error - the last option needs argument ***\n");
 		exit(EXIT_FAILURE);
-	} else if ((inf == 0) || (outf == 0)) {
-	 	fprintf(stderr, "*** FATAL main error - Cannot find INPUT or OUTPUT Filename ***\n");
+	} else if (inf == 0) {
+	 	fprintf(stderr, "*** FATAL main error - Cannot find INPUT Filename ***\n");
 		exit(EXIT_FAILURE);
 	} else if (Start > End) {
 		fprintf(stderr, "*** FATAL main error - Start number exceeds End number (Start : %d, End : %d) ***\n", Start, End);
@@ -194,10 +183,9 @@ main(int argc, char *argv[])
 
 	// Regular expression
 	InputName = argv[inf];
-	OutputName = argv[outf];
 	// main routine
 	try {
-		SequenceProcessor(OutputName, InputName, Start, End, Options);
+		SequenceProcessor(InputName, Start, End, Options);
 	}
 	catch (const std::logic_error& logic) {
 		std::cerr << logic.what() << std::endl;

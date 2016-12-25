@@ -4,7 +4,7 @@
 
 
 void
-SequenceProcessor(const std::string& OutputName, const std::string& InputName, const int Start, const int End, const OPTIONS& Options)
+SequenceProcessor(const std::string& InputName, const int Start, const int End, const OPTIONS& Options)
 {
 	ERROR Error("SequenceProcessor");
 	const char *Bars = "------------------------------------------------";
@@ -19,15 +19,10 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 	size_t InputNameLength =
 	    InputName.length() + 1
 	    + std::max(count_format_length(InputName), size_t(ceil(log(End) / log(10.0))));
-	size_t OutputNameLength =
-	    OutputName.length() + 1
-	    + std::max(count_format_length(OutputName), size_t(ceil(log(End) / log(10.0))));
 
 	// Process on the sequence
 	for (CurrentFileNum = Start; CurrentFileNum <= End; CurrentFileNum++) {
 		std::string InputNameNums;
-		std::string OutputNameNums;
-		std::string OutputNameNums_prev;
 		// Substitute number to filename
 		if (InputName.find_first_of("%") == std::string::npos) {
 			InputNameNums = InputName;
@@ -44,27 +39,6 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 			}
 			sprintf(char_tmp, InputName.c_str(), CurrentFileNum);
 			InputNameNums = char_tmp;
-			delete[] char_tmp;
-			char_tmp = nullptr;
-		}
-		if (OutputName.find_first_of("%") == std::string::npos) {
-			OutputNameNums = OutputName;
-			OutputNameNums_prev = OutputName;
-		} else {
-			char *char_tmp = nullptr;
-			try {
-				char_tmp = new char[OutputNameLength];
-			}
-			catch (const std::bad_alloc& bad) {
-				std::cerr << bad.what() << std::endl;
-				Error.Value("char_tmp");
-				Error.Malloc();
-				goto ExitError;
-			}
-			sprintf(char_tmp, OutputName.c_str(), CurrentFileNum);
-			OutputNameNums = char_tmp;
-			sprintf(char_tmp, OutputName.c_str(), CurrentFileNum - 1);
-			OutputNameNums_prev = char_tmp;
 			delete[] char_tmp;
 			char_tmp = nullptr;
 		}
@@ -114,7 +88,7 @@ SequenceProcessor(const std::string& OutputName, const std::string& InputName, c
 
 // Exit Error
 ExitError:
-	throw std::logic_error("error: void SequenceProcessor(char *OutputName, char *InputName, unsigned int OutputNameLength, unsigned int InputNameLength, int Start, int End, OPTIONS Options)");
+	throw std::logic_error("error: void SequenceProcessor(const std::string&, const int, const int, const OPTIONS&)");
 }
 
 
