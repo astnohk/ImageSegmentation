@@ -105,6 +105,29 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		pnm.free();
 	}
 	{
+		// Output converge points
+		std::string current_filename_converge = current_filename.substr(0, found) + "converge-ponits_" + current_filename.substr(found);
+		ImgVector<int> count(result->width(), result->height());
+		int max = 0;
+		for (int y = 0; y < result->height(); y++) {
+			for (int x = 0; x < result->width(); x++) {
+				count.at(x, y) = static_cast<int>(result->ref_vector_converge_list_map().at(x, y).size());
+				if (count.get(x, y) > max) {
+					max = count.get(x, y);
+				}
+			}
+		}
+		PNM pnm(PORTABLE_PIXMAP_BINARY, result->width(), result->height(), 255);
+		for (size_t n = 0; n < result->size(); n++) {
+			HSV hsv(atan2(count[n], max) / M_PI * 2.0, 1.0, count[n] > 0 ? 1.0 : 0.0);
+			RGB rgb = saturate(255.0 * hsv.get_RGB(), 0.0, 255.0);
+			pnm[n] = (pnm_img)rgb.R;
+			pnm[n + pnm.Size()] = (pnm_img)rgb.G;
+			pnm[n + 2 * pnm.Size()] = (pnm_img)rgb.B;
+		}
+		pnm.write(current_filename_converge.c_str());
+	}
+	{
 		// Output vectors
 		std::string current_filename_vector = current_filename.substr(0, found) + "shift-vector_" + current_filename.substr(found) + ".dat";
 		FILE *fp;
@@ -129,13 +152,13 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		}
 		fclose(fp);
 		// Plot vectors by using HSV color space
-		PNM pnm(PORTABLE_PIXMAP_ASCII, result->width(), result->height(), 255);
+		PNM pnm(PORTABLE_PIXMAP_BINARY, result->width(), result->height(), 255);
 		for (size_t n = 0; n < vector_hsv.size(); n++) {
 			vector_hsv[n].V /= norm_max;
 			RGB rgb = saturate(255.0 * vector_hsv[n].get_RGB(), 0.0, 255.0);
-			pnm[n] = rgb.R;
-			pnm[n + pnm.Size()] = rgb.G;
-			pnm[n + 2 * pnm.Size()] = rgb.B;
+			pnm[n] = (pnm_img)rgb.R;
+			pnm[n + pnm.Size()] = (pnm_img)rgb.G;
+			pnm[n + 2 * pnm.Size()] = (pnm_img)rgb.B;
 		}
 		std::string current_filename_vector_image = current_filename.substr(0, found) + "shift-vector-img_" + current_filename.substr(found);
 		pnm.write(current_filename_vector_image.c_str());
