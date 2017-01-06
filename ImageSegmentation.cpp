@@ -118,24 +118,15 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	}
 	{
 		// Output converge points
-		std::string current_filename_converge = current_filename.substr(0, found) + "converge-ponits_" + current_filename.substr(found);
-		ImgVector<int> count(result->width(), result->height());
-		int max = 0;
-		for (int y = 0; y < result->height(); y++) {
-			for (int x = 0; x < result->width(); x++) {
-				count.at(x, y) = static_cast<int>(result->ref_vector_converge_list_map().at(x, y).size());
-				if (count.get(x, y) > max) {
-					max = count.get(x, y);
-				}
-			}
-		}
+		std::string current_filename_converge = current_filename.substr(0, found) + "converge-points_" + current_filename.substr(found);
 		if (pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255) != PNM_FUNCTION_SUCCESS) {
 			std::cout << "pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255)" << std::endl;
 			throw std::logic_error("ImageSegmentation(): pnm.copy()");
 		}
 		for (size_t n = 0; n < result->size(); n++) {
-			HSV hsv(atan2(count[n], max) / M_PI * 2.0, 1.0, count[n] > 0 ? 1.0 : 0.0);
-			RGB rgb = saturate(255.0 * RGB(hsv), 0.0, 255.0);
+			VECTOR_2D<int> vec = result->ref_vector_converge_list_map().at(n).front();
+			Lab lab = result->ref_shift_vector_color().at(vec.x, vec.y);
+			RGB rgb = saturate(255.0 * RGB(lab), 0.0, 255.0);
 			pnm[n] = pnm_img(rgb.R);
 			pnm[n + pnm.Size()] = pnm_img(rgb.G);
 			pnm[n + 2 * pnm.Size()] = pnm_img(rgb.B);
