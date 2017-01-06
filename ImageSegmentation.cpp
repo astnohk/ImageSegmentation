@@ -1,7 +1,10 @@
 /*
  * Robust Image Segmentation with Fixed Mean Shift algorithm
  */
+
+#include <stdexcept>
 #include "ImageSegmentation.h"
+
 
 using namespace ImgClass;
 
@@ -70,7 +73,10 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		for (size_t i = 0; i < result->size(); i++) {
 			tmp_vector[i] = static_cast<int>(result->at(i));
 		}
-		pnm.copy(PORTABLE_GRAYMAP_BINARY, size_t(result->width()), size_t(result->height()), int(tmp_vector.max()), tmp_vector.data());
+		if (pnm.copy(PORTABLE_GRAYMAP_BINARY, size_t(result->width()), size_t(result->height()), int(tmp_vector.max()), tmp_vector.data()) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.copy(PORTABLE_GRAYMAP_BINARY, size_t(result->width()), size_t(result->height()), int(tmp_vector.max()), tmp_vector.data())" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.copy()");
+		}
 		pnm.write(current_filename_segmentation.c_str());
 		pnm.free();
 	}
@@ -98,10 +104,16 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		}
 		std::string current_filename_quantized = current_filename.substr(0, found) + "color-quantized_" + current_filename.substr(found);
 		printf("* Output The color quantized image '%s'(binary)\n\n", current_filename_quantized.c_str());
-		pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255, img_quantized);
+		if (pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255, img_quantized) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255, img_quantized)" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.copy()");
+		}
 		delete[] img_quantized;
 		img_quantized = nullptr;
-		pnm.write(current_filename_quantized.c_str());
+		if (pnm.write(current_filename_quantized.c_str()) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.write()" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.write()");
+		}
 		pnm.free();
 	}
 	{
@@ -117,15 +129,21 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 				}
 			}
 		}
-		pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255, nullptr);
+		if (pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255)" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.copy()");
+		}
 		for (size_t n = 0; n < result->size(); n++) {
 			HSV hsv(atan2(count[n], max) / M_PI * 2.0, 1.0, count[n] > 0 ? 1.0 : 0.0);
-			RGB rgb = saturate(255.0 * hsv.get_RGB(), 0.0, 255.0);
+			RGB rgb = saturate(255.0 * RGB(hsv), 0.0, 255.0);
 			pnm[n] = pnm_img(rgb.R);
 			pnm[n + pnm.Size()] = pnm_img(rgb.G);
 			pnm[n + 2 * pnm.Size()] = pnm_img(rgb.B);
 		}
-		pnm.write(current_filename_converge.c_str());
+		if (pnm.write(current_filename_converge.c_str()) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.write()" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.write()");
+		}
 	}
 	{
 		// Output vectors
@@ -142,7 +160,7 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 				v.y = result->ref_shift_vector_spatial().get(x, y).y - y;
 				vector_hsv.at(x, y).set_H(arg(v) / M_PI * 0.5);
 				vector_hsv.at(x, y).S = 1.0;
-				vector_hsv.at(x, y).V = norm(v);
+				vector_hsv.at(x, y).V = sqrt(1.0 + norm(v)) - 1.0;
 				if (norm_max < vector_hsv.at(x, y).V) {
 					norm_max = vector_hsv.at(x, y).V;
 				}
@@ -152,16 +170,22 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		}
 		fclose(fp);
 		// Plot vectors by using HSV color space
-		pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255, nullptr);
+		if (pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.copy(PORTABLE_PIXMAP_BINARY, size_t(result->width()), size_t(result->height()), 255)" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.copy()");
+		}
 		for (size_t n = 0; n < vector_hsv.size(); n++) {
 			vector_hsv[n].V /= norm_max;
-			RGB rgb = saturate(255.0 * vector_hsv[n].get_RGB(), 0.0, 255.0);
+			RGB rgb = saturate(255.0 * RGB(vector_hsv[n]), 0.0, 255.0);
 			pnm[n] = pnm_img(rgb.R);
 			pnm[n + pnm.Size()] = pnm_img(rgb.G);
 			pnm[n + 2 * pnm.Size()] = pnm_img(rgb.B);
 		}
 		std::string current_filename_vector_image = current_filename.substr(0, found) + "shift-vector-img_" + current_filename.substr(found);
-		pnm.write(current_filename_vector_image.c_str());
+		if (pnm.write(current_filename_vector_image.c_str()) != PNM_FUNCTION_SUCCESS) {
+			std::cout << "pnm.write()" << std::endl;
+			throw std::logic_error("ImageSegmentation(): pnm.write()");
+		}
 	}
 	return result;
 }
