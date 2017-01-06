@@ -18,9 +18,7 @@
 #include "Option.h"
 
 #define OUTPUT_IMG_CLASS
-#include "ImgClass/RGB.h"
-#include "ImgClass/Lab.h"
-#include "ImgClass/HSV.h"
+#include "ImgClass/Color.h"
 #include "ImgClass/Vector.h"
 #include "ImgClass/ImgClass.h"
 #include "ImgClass/Segmentation.h"
@@ -44,5 +42,5 @@ extern const char Progress_End[];
 void SequenceProcessor(const std::string& InputName, const int Start, const int End, const OPTIONS& Options);
 size_t count_format_length(const std::string& str);
 
-ImgClass::Segmentation<ImgClass::Lab>* ImageSegmentation(const ImgVector<ImgClass::RGB>& img, const double& MaxInt, const unsigned int Mode, const std::string& newest_filename);
+ImgClass::Segmentation<ImgClass::Lab>* ImageSegmentation(const ImgVector<ImgClass::RGB>& img, const double& MaxInt, const unsigned long Mode, const std::string& newest_filename);
 

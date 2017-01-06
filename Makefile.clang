@@ -7,7 +7,7 @@ MACROS=
 
 MAIN_CFILES = main.cpp SequenceProcessor.cpp ImageSegmentation.cpp
 LIBRARY_CFILES = Error.cpp Option.cpp
-IMGCLASS_CFILES = ImgClass/Color.cpp ImgClass/Lab.cpp ImgClass/RGB.cpp ImgClass/HSV.cpp ImgClass/Segmentation.cpp
+IMGCLASS_CFILES = ImgClass/Lab.cpp ImgClass/RGB.cpp ImgClass/HSV.cpp ImgClass/Segmentation.cpp
 PNM_CFILES = pnm_lib_cpp/pnm.cpp pnm_lib_cpp/pnm_double.cpp pnm_lib_cpp/pnm_library.cpp
 
 CFILES = $(MAIN_CFILES) $(LIBRARY_CFILES) $(IMGCLASS_CFILES) $(MEANINGFUL_CFILES) $(OPTICALFLOW_CFILES) $(HOG_CFILES) $(PLOT_CFILES) $(PNM_CFILES)
@@ -15,7 +15,7 @@ CFILES = $(MAIN_CFILES) $(LIBRARY_CFILES) $(IMGCLASS_CFILES) $(MEANINGFUL_CFILES
 
 MAIN_OFILES = main.o SequenceProcessor.o ImageSegmentation.o
 LIBRARY_OFILES = Error.o Option.o
-IMGCLASS_OFILES = Color.o Lab.o RGB.o HSV.o Segmentation.o
+IMGCLASS_OFILES = Lab.o RGB.o HSV.o Segmentation.o
 PNM_OFILES = pnm.o pnm_double.o pnm_library.o
 
 OFILES = $(MAIN_OFILES) $(LIBRARY_OFILES) $(IMGCLASS_OFILES) $(MEANINGFUL_OFILES) $(OPTICALFLOW_OFILES) $(HOG_OFILES) $(PLOT_OFILES) $(PNM_OFILES)
@@ -42,9 +42,6 @@ Error.o: Error.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
 Option.o: Option.cpp
-	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
-
-Color.o: ImgClass/Color.cpp
 	$(CC) $(WARNING) $(OPTION) $(MACROS) -c $^
 
 Lab.o: ImgClass/Lab.cpp

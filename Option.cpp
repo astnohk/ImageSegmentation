@@ -61,9 +61,9 @@ OPTIONS::set_value(const char *name, const void *value)
 	if (strcmp(name, "ResampleSize") == 0) {
 		ResampleSize = *static_cast<const SIZE*>(value);
 	} else if (strcmp(name, "Mode") == 0) {
-		Mode = *static_cast<const int*>(value);
+		Mode = *static_cast<const unsigned long*>(value);
 	} else if (strcmp(name, "Output") == 0) {
-		Output = *static_cast<const int*>(value);
+		Output = *static_cast<const unsigned long*>(value);
 	} else {
 		std::cerr << "*** OPTIONS::set_default() error - There are NOT such a parameter '" << name << "' ***" << std::endl;
 	}

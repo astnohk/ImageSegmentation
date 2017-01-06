@@ -54,7 +54,7 @@ SequenceProcessor(const std::string& InputName, const int Start, const int End, 
 		    << "- and bit depth is " << round(log2(double(pnm_orig.MaxInt()))) << std::endl;
 
 		// Copy color image to ImgVector<ImgClass::RGB> imgd_in
-		imgd_in.reset(pnm_orig.Width(), pnm_orig.Height());
+		imgd_in.reset(int(pnm_orig.Width()), int(pnm_orig.Height()));
 		for (size_t i = 0; i < imgd_in.size(); i++) {
 			if (pnm_orig.isRGB()) {
 				imgd_in[i] = ImgClass::RGB(pnm_orig[i], pnm_orig[i + pnm_orig.Size()], pnm_orig[i + 2 * pnm_orig.Size()]);
@@ -78,7 +78,7 @@ SequenceProcessor(const std::string& InputName, const int Start, const int End, 
 
 		// Resample
 		if (Options.ResampleSize.width > 0 || Options.ResampleSize.height > 0) {
-			imgd_in.resample_bicubic(Options.ResampleSize.width, Options.ResampleSize.height);
+			imgd_in.resample_bicubic(int(Options.ResampleSize.width), int(Options.ResampleSize.height));
 		}
 
 		// Segmentation & Output
