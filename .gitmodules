@@ -1,0 +1,6 @@
+[submodule "ImgClass"]
+	path = ImgClass
+	url = git@github.com:astnohk/ImgClass.git
+[submodule "pnm_lib_cpp"]
+	path = pnm_lib_cpp
+	url = git@github.com:astnohk/pnm_lib_cpp.git

@@ -38,18 +38,12 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	}
 
 	// Segmentation
-#ifdef MEANSHIFT_KERNEL_SPATIAL
-	// for images under about HD resolution
-	double kernel_spatial = MEANSHIFT_KERNEL_SPATIAL;
-	double kernel_intensity = 16.0 / 255.0;
-#else
 	// for 4K Film kernel(spatial = 64.0, intensity = 12.0 / 255.0)
 	//double kernel_spatial = 64.0;
 	//double kernel_intensity = 16.0 / 255.0;
 	// for images under about HD resolution
-	double kernel_spatial = 20.0;
-	double kernel_intensity = 16.0 / 255.0;
-#endif
+	double kernel_spatial = 16.0;
+	double kernel_intensity = 12.0 / 255.0;
 
 	printf("* * Compute Segmentation by Mean Shift\n");
 	try {
