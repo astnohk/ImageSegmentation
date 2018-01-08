@@ -67,9 +67,25 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		for (size_t i = 0; i < result->size(); i++) {
 			tmp_vector[i] = static_cast<int>(result->at(i));
 		}
-		if (pnm.copy(PORTABLE_GRAYMAP_BINARY, size_t(result->width()), size_t(result->height()), int(tmp_vector.max()), tmp_vector.data()) != PNM_FUNCTION_SUCCESS) {
-			std::cout << "pnm.copy(PORTABLE_GRAYMAP_BINARY, size_t(result->width()), size_t(result->height()), int(tmp_vector.max()), tmp_vector.data())" << std::endl;
-			throw std::logic_error("ImageSegmentation(): pnm.copy()");
+		pnm.copy(PORTABLE_PIXMAP_BINARY, result->width(), result->height(), 255);
+		for (int y = 0; y < result->height(); y++) {
+			for (int x = 0; x < result->width(); x++) {
+				// 00100100 10010010 01001001
+				// 01001001 00100100 10010010
+				// 10010010 01001001 00100100
+				pnm.at(x, y, 0) = 255 -
+				      ((tmp_vector.at(x, y) & 0x000049)
+				    | ((tmp_vector.at(x, y) & 0x009200) >> 8)
+				    | ((tmp_vector.at(x, y) & 0x240000) >> 16));
+				pnm.at(x, y, 1) = 255 -
+				      ((tmp_vector.at(x, y) & 0x000092)
+				    | ((tmp_vector.at(x, y) & 0x002400) >> 8)
+				    | ((tmp_vector.at(x, y) & 0x490000) >> 16));
+				pnm.at(x, y, 2) = 255 -
+				      ((tmp_vector.at(x, y) & 0x000024)
+				    | ((tmp_vector.at(x, y) & 0x004900) >> 8)
+				    | ((tmp_vector.at(x, y) & 0x920000) >> 16));
+			}
 		}
 		pnm.write(current_filename_segmentation.c_str());
 		pnm.free();
