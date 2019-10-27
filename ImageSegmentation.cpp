@@ -49,7 +49,7 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 	try {
 		result = new Segmentation<Lab>;
 	}
-	catch (std::bad_alloc err) {
+	catch (std::bad_alloc& err) {
 		std::cerr << err.what() << std::endl;
 		return nullptr;
 	}
