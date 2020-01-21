@@ -42,5 +42,5 @@ extern const char Progress_End[];
 void SequenceProcessor(const std::string& InputName, const int Start, const int End, const OPTIONS& Options);
 size_t count_format_length(const std::string& str);
 
-ImgClass::Segmentation<ImgClass::Lab>* ImageSegmentation(const ImgVector<ImgClass::RGB>& img, const double& MaxInt, const unsigned long Mode, const std::string& newest_filename);
+ImgClass::Segmentation<ImgClass::Lab>* ImageSegmentation(const ImgVector<ImgClass::RGB>& img, const double& MaxInt, const unsigned long Mode, const std::string& newest_filename, const int IterMax = 32);
 

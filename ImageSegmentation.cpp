@@ -12,7 +12,7 @@ using namespace ImgClass;
 
 // This function will compute INVERSE Optical Flow it points the previous frame which will come to the current (next) frame.
 Segmentation<Lab> *
-ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned long Mode, const std::string& current_filename)
+ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigned long Mode, const std::string& current_filename, const int IterMax)
 {
 	std::bad_alloc except_bad_alloc;
 
@@ -53,7 +53,7 @@ ImageSegmentation(const ImgVector<RGB>& img, const double& MaxInt, const unsigne
 		std::cerr << err.what() << std::endl;
 		return nullptr;
 	}
-	result->reset(img_Lab_normalize, kernel_spatial, kernel_intensity); // Set and compute segmentation
+	result->reset(img_Lab_normalize, IterMax, kernel_spatial, kernel_intensity); // Set and compute segmentation
 
 	PNM pnm;
 	std::string::size_type found = 1 + current_filename.find_last_not_of("0123456789", current_filename.find_last_of("0123456789", current_filename.find_last_of(".")));
